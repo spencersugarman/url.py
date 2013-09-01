@@ -2,6 +2,9 @@ url.py
 ======
 A teeny tiny itty bitty Python library for extracting and manipulating URLs.
 
+Properties
+----------
+
 Passing a URL to url.py breaks apart the URL into its component parts:
 
 * Protocol ('http')
@@ -16,6 +19,9 @@ Passing a URL to url.py breaks apart the URL into its component parts:
 * Fragment ('#link')
 
 These can be accessed at myUrl.protocol, myUrl.subdomain, and so on.
+
+Methods
+-------
 
 Other fun things you can do:
 
