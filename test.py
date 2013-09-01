@@ -59,3 +59,8 @@ if x2.is_subdomain_of('front1.example.co.uk') != True:
 x3 = url.URL('front1.example.co.uk')
 if x3.is_parent_domain_of('http://dev.front1.example.co.uk') != True:
     print 'is_parent_domain_of is broken'
+
+# Test parent domain method with same domain
+x4 = url.URL('example.co.uk')
+if x4.is_parent_domain_of('http://example.co.uk') != False:
+    print 'is_parent_domain_of is broken'
