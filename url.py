@@ -272,6 +272,7 @@ class URL(object):
         'https': '443'
     }
 
+    # from https://github.com/medialize/URI.js/blob/gh-pages/src/SecondLevelDomains.js
     _slds = {
         "ac":"com|gov|mil|net|org",
         "ae":"ac|co|gov|mil|name|net|org|pro|sch",
