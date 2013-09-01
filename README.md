@@ -88,3 +88,12 @@ Tests if your URL is a subdomain of the passed URL.
     myUrl.is_subdomain_of('host1.example.com') # True
     myUrl.is_subdomain_of('example.com') # True
     myUrl.is_subdomain_of('www.example.com') # False
+
+### is_parent_domain_of(testUrl)
+
+Tests if your URL is a parent domain of the passed URL.
+
+    myUrl.url # example.com
+    myUrl.is_parent_domain_of('http://stage.host1.example.com/') # True
+    myUrl.is_parent_domain_of('www.example.com/') # True
+    myUrl.is_parent_domain_of('http://example.com') # False
