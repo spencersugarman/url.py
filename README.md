@@ -2,6 +2,8 @@ url.py
 ======
 A teeny tiny itty bitty Python library for extracting and manipulating URLs.
 
+_Covers about 13.6% of http://tools.ietf.org/html/rfc3986_
+
 ## Properties
 
 Passing a URL to url.py breaks apart the URL into its component parts:
