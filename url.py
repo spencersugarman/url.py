@@ -3,12 +3,17 @@ import re
 class URL(object):
     """A class for extracting various parts of a URL"""
     def __init__ (self, value, useDefaults=False):
+        # protocol, port, and path will be set to defaults if missing
         self.useDefaults = useDefaults is True
         self.url = value
+
+    def __str__(self):
+        return self.url
 
     def url():
         doc = "The url property."
         def fget(self):
+            # build the url string
             url = ''
             if self.protocol:
                 url = self.protocol + '://'
@@ -25,8 +30,15 @@ class URL(object):
                 url += '#' + self.fragment
             return url
         def fset(self, value):
-            self._url = value
-            self.__parse_url(value)
+            parts = self._parse_url(value)
+            self.protocol = parts.get('protocol')
+            self.username = parts.get('username')
+            self.password = parts.get('password')
+            self.hostname = parts.get('hostname')
+            self.port = parts.get('port')
+            self.path = parts.get('path')
+            self.query = parts.get('query')
+            self.fragment = parts.get('fragment')
         return locals()
     url = property(**url())
 
@@ -48,12 +60,12 @@ class URL(object):
     def query():
         doc = "The query property."
         def fget(self):
-            return self.__build_query()
+            return self._build_query()
         def fset(self, value):
             if value is None:
                 self._queries = None
             else:
-                self._queries = self.__parse_query(value)
+                self._queries = self._parse_query(value)
         return locals()
     query = property(**query())
 
@@ -65,7 +77,9 @@ class URL(object):
                 hostname += self.subdomain + '.'
             return hostname + self._domain
         def fset(self, value):
-            self.__parse_hostname(value)
+            parts = self._parse_hostname(value)
+            self.subdomain = parts.get('subdomain')
+            self._set_domain(parts)
         return locals()
     hostname = property(**hostname())
 
@@ -74,40 +88,44 @@ class URL(object):
         def fget(self):
             return self.hostname[len(self.subdomain)+1:]
         def fset(self, value):
-            self.__parse_hostname(value)
+            parts = self._parse_hostname(value)
+            self._set_domain(parts)
         return locals()
     domain = property(**domain())
 
-    def __parse_hostname(self, string):
+    def _set_domain(self, parts):
+        self._domain = parts.get('domain')
+        self.tld = parts.get('tld')
+        self.sld = parts.get('sld')
+
+    def _parse_hostname(self, string):
         """Extract the subdomain, domain, tld, and sld"""
+        parts = {}
         pos = string.find('.')
         if pos > -1:
-            xlds = self.__get_xlds(string)
-            self.tld = xlds['tld']
-            self.sld = xlds['sld']
+            xlds = self._get_xlds(string)
+            parts['tld'] = xlds['tld']
+            parts['sld'] = xlds['sld']
             matches = re.findall('(\.)', string)
             if len(matches) == 1 or (xlds['sld'] and len(matches) == 2):
                 # example.com
                 # example.co.uk
-                self._domain = string
-                self.subdomain = None
+                parts['domain'] = string
             else:
                 # www.example.com
                 # ww.example.co.uk
                 pos = string.find('.')
-                self._domain = string[pos+1:]
-                self.subdomain = string[:pos]
+                parts['domain'] = string[pos+1:]
+                parts['subdomain'] = string[:pos]
         else:
-            self._domain = string
-            self.subdomain = None
-            self.tld = None
-            self.sld = None
+            parts['domain'] = string
+        return parts
 
-    def __build_query(self):
+    def _build_query(self):
         if self._queries is not None:
             return "&".join('%s=%s' % (k, v) for k,v in self._queries.iteritems())
 
-    def __parse_query(self, string):
+    def _parse_query(self, string):
         queries = {}
         splitString = string.split('&')
         for query in splitString:
@@ -116,88 +134,103 @@ class URL(object):
         return queries
 
     def add_query(self, query, parameter):
+        """Add a query and parameter to the query string.
+        Overwrites current parameter if passed an existing query."""
         self.update_query(self, query, parameter)
 
     def update_query(self, query, parameter):
+        """Updates a parameter in the query string"""
         self._queries[query] = parameter
 
     def delete_query(self, query):
+        """Deletes a query from the query string"""
         self._queries.pop(query, None)
 
     def get_query(self, query=None):
+        """Convenience method for returning the entire query string or specific query"""
         if query is None:
-            return self.__build_query()
+            return self._build_query()
         return self._queries[query]
 
-    def __parse_url(self, string):
+    def qet_queries(self):
+        """Returns the query string as a dictionary."""
+        return self._queries
+
+    def move_up_level(self, numLevels=1):
+        """Moves the URL path up one level in the directory tree
+        recurses if numLevels is greater than 1
+        e.g., if at /path/to/level1/level2/
+        move_up_dir() will return /path/to/level1/"""
+        if numLevels > 0 and self.path and len(re.findall('/', self.path)):
+            pos = self.path[:len(self.path)-2].rfind('/')
+            self.path = self.path[:pos+1]
+            self.move_up_level(numLevels - 1)
+
+    def is_subdomain_of(self, testUrl):
+        """Returns True if Object.url is subdomain of the passed URL"""
+        parts = self._parse_hostname(testUrl)
+        return self.subdomain and self.domain == parts.get('domain')
+
+    def _parse_url(self, string):
+        parts = {}
+
         # http://username:password@www.example.com:80/path/to/file?query=parameter#link
         pos = string.find('#')
         if pos > -1:
-            self.fragment = string[pos+1:]
+            parts['fragment'] = string[pos+1:]
             string = string[:pos]
-        else:
-            self.fragment = None
 
         # http://username:password@www.example.com:80/path/to/file?query=parameter
         pos = string.find('?')
         if pos > -1:
-            self.query = string[pos+1:]
+            parts['query'] = string[pos+1:]
             string = string[:pos]
-        else:
-            self.query = None
 
         # http://username:password@www.example.com:80/path/to/file
         if string[0:1] == '//':
             # no scheme given
-            self.protocol = None
             string = string[2:]
         else:
             pos = string.find('://')
             if pos > -1:
-                self.protocol = string[:pos].lower()
+                parts['protocol'] = string[:pos].lower()
                 string = string[pos+3:]
             elif self.useDefaults:
-                self.protocol = 'http'
-            else:
-                self.protocol = None
+                parts['protocol'] = 'http'
 
         # username:password@www.example.com:80/path/to/file
         pos = string.find('@')
         if pos > -1 and pos < string.find('/'):
             userinfo = string[:pos].split(':')
-            self.username, self.password = userinfo[0], userinfo[1]
+            parts['username'], parts['password'] = userinfo[0], userinfo[1]
             string = string[pos+1:]
-        else:
-            self.username, self.password = None, None
 
         # www.example.com:80/path/to/file
         pos = string.find('/')
         if pos > -1:
-            self.path = string[pos:]
+            parts['path'] = string[pos:]
             string = string[:pos]
         elif self.useDefaults:
-            self.path = '/'
-        else:
-            self.path = None
+            parts['path'] = '/'
 
         # www.example.com:80
         pos = string.find(':')
         if pos > -1:
-            self.port = string[pos+1:]
+            parts['port'] = string[pos+1:]
             string = string[:pos]
         elif self.useDefaults and self.protocol:
             if self.protocol in self._defaultPorts:
-                self.port = self._defaultPorts[self.protocol]
-        else:
-            self.port = None
+                parts['port'] = self._defaultPorts[self.protocol]
 
         # www.example.com
         if len(string) > 0:
-            self.hostname = string
+            parts['hostname'] = string
         else:
             raise Exception("Must provide a valid hostname")
 
-    def __get_xlds (self, string, tld=None, sld=None):
+        return parts
+
+    def _get_xlds (self, string, tld=None, sld=None):
         if tld is None:
             pos = string.rfind('.')
             tld = string[pos+1:]
