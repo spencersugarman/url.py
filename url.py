@@ -197,9 +197,12 @@ class URL(object):
         parts = self._parse_url(testUrl)
         testHostname = parts.get('hostname')
         if testHostname is not None:
-            return testHostname.find(self.hostname) > -1
-        else:
-            return False
+            testHostnameParts = self._parse_hostname(testHostname)
+            testSubdomain = testHostnameParts.get('subdomain')
+            if testSubdomain is not None:
+                # test URL must have subdomain to have a parent domain
+                return testHostname.find(self.hostname) > -1
+        return False
 
     def _parse_url(self, string):
         parts = {}
