@@ -23,7 +23,7 @@ These can be accessed at myUrl.protocol, myUrl.subdomain, and so on.
 
 Other fun things you can do:
 
-**update_query(queryName, parameter)**
+### update_query(queryName, parameter)
 
 Add a key/value pair to the query string.
 
@@ -37,7 +37,7 @@ If a query with that name already exists, its parameter is updated:
     myUrl.add_query('newQuery', 'reallyNewParam')
     myUrl.url # http://example.com/?q1=p1&newQuery=reallyNewParam
     
-**delete_query(queryName)**
+### delete_query(queryName)
 
 Remove a query with the given name from the query string
 
@@ -45,7 +45,7 @@ Remove a query with the given name from the query string
     myUrl.delete_query('newQuery')
     myUrl.url # http://example.com/?q1=p1
 
-**get_query([queryName])**
+### get_query([queryName])
 
 Get the query string. If no queryName is specified, returns the same as myUrl.query.
 
@@ -58,7 +58,7 @@ If a queryName is specified, returns that part of the query string only:
     myUrl.get_query('q1') # q1=p1
     myUrl.get_query('newQuery') # newQuery=reallyNewParam
 
-**get_queries()**
+### get_queries()
 
 Returns the queries string as a dictionary.
 
@@ -68,7 +68,7 @@ Returns the queries string as a dictionary.
                         #   "newQuery":"reallyNewParam"
                         # }
 
-**move_up_level([numLevels])**
+### move_up_level([numLevels])
 
 Moves up the path by the specified number of levels (defaults to 1) 
 
@@ -78,7 +78,7 @@ Moves up the path by the specified number of levels (defaults to 1)
     myUrl.move_up_level(2)
     myUrl.url # http://example.com/
 
-**is_subdomain_of(testUrl)**
+### is_subdomain_of(testUrl)
 
 Tests if your URL is a subdomain of the passed URL.
 
