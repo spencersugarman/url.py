@@ -150,7 +150,7 @@ class URL(object):
 
     def add_query(self, query, parameter):
         """Add a query and parameter to the query string;
-        
+
         overwrites current parameter if passed an existing query
 
         """
@@ -176,7 +176,7 @@ class URL(object):
 
     def move_up_level(self, numLevels=1):
         """Moves the URL path up one level in the directory tree;
-        
+
         recurses if numLevels is greater than 1
 
         """
@@ -191,6 +191,15 @@ class URL(object):
         """Returns True if Object.url is subdomain of the passed URL"""
         parts = self._parse_url(testUrl)
         return self.subdomain and self.hostname.find(parts.get('hostname')) > -1
+
+    def is_parent_domain_of(self, testUrl):
+        """Returns True if Object.url is parent domain of the passed URL"""
+        parts = self._parse_url(testUrl)
+        testHostname = parts.get('hostname')
+        if testHostname is not None:
+            return testHostname.find(self.hostname) > -1
+        else:
+            return False
 
     def _parse_url(self, string):
         parts = {}
