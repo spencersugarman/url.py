@@ -49,3 +49,7 @@ if x.url != 'http://username:password@www.example.co.uk:80/path/to/file?query=pa
 
 if x.is_subdomain_of('example.co.uk') != True:
     print 'is_subdomain_of is broken'
+
+x.url = 'http://dev.front1.example.co.uk'
+if x.is_subdomain_of('front1.example.co.uk') != True:
+    print 'subsubdomain is_subdomain_of is broken'

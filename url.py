@@ -3,7 +3,7 @@ import re
 class URL(object):
     """A class for extracting various parts of a URL"""
     def __init__ (self, value, useDefaults=False):
-        # protocol, port, and path will be set to defaults if missing
+        # If useDefaults=True, protocol, port, and path will be set to defaults if missing
         self.useDefaults = useDefaults is True
         self.url = value
 
@@ -30,14 +30,23 @@ class URL(object):
                 url += '#' + self.fragment
             return url
         def fset(self, value):
+            # in an example URL http://user:pass@www.example.co.uk:80/dir/?foo=bar#link
             parts = self._parse_url(value)
+            # protocol is 'http'
             self.protocol = parts.get('protocol')
+            # username is 'user'
             self.username = parts.get('username')
+            # password is 'pass'
             self.password = parts.get('password')
+            # hostname is 'www.example.co.uk'
             self.hostname = parts.get('hostname')
+            # port is '80'
             self.port = parts.get('port')
+            # path is '/dir/'
             self.path = parts.get('path')
+            # query is 'foo=bar'
             self.query = parts.get('query')
+            # fragment is 'link'
             self.fragment = parts.get('fragment')
         return locals()
     url = property(**url())
@@ -77,7 +86,9 @@ class URL(object):
                 hostname += self.subdomain + '.'
             return hostname + self._domain
         def fset(self, value):
+            # in an example URL http://user:pass@www.example.co.uk:80/dir/?foo=bar#link
             parts = self._parse_hostname(value)
+            # subdomain is 'www'
             self.subdomain = parts.get('subdomain')
             self._set_domain(parts)
         return locals()
@@ -94,8 +105,12 @@ class URL(object):
     domain = property(**domain())
 
     def _set_domain(self, parts):
+        # in an example URL http://user:pass@www.example.co.uk:80/dir/?foo=bar#link
+        # domain is 'example.com'
         self._domain = parts.get('domain')
+        # top level domain is 'uk'
         self.tld = parts.get('tld')
+        # second level domain is 'co'
         self.sld = parts.get('sld')
 
     def _parse_hostname(self, string):
@@ -134,8 +149,11 @@ class URL(object):
         return queries
 
     def add_query(self, query, parameter):
-        """Add a query and parameter to the query string.
-        Overwrites current parameter if passed an existing query."""
+        """Add a query and parameter to the query string;
+        
+        overwrites current parameter if passed an existing query
+
+        """
         self.update_query(self, query, parameter)
 
     def update_query(self, query, parameter):
@@ -153,14 +171,17 @@ class URL(object):
         return self._queries[query]
 
     def qet_queries(self):
-        """Returns the query string as a dictionary."""
+        """Returns the query string as a dictionary"""
         return self._queries
 
     def move_up_level(self, numLevels=1):
-        """Moves the URL path up one level in the directory tree
+        """Moves the URL path up one level in the directory tree;
+        
         recurses if numLevels is greater than 1
-        e.g., if at /path/to/level1/level2/
-        move_up_dir() will return /path/to/level1/"""
+
+        """
+        # if at /path/to/level1/level2/
+        # move_up_dir() will return /path/to/level1/
         if numLevels > 0 and self.path and len(re.findall('/', self.path)):
             pos = self.path[:len(self.path)-2].rfind('/')
             self.path = self.path[:pos+1]
@@ -168,8 +189,8 @@ class URL(object):
 
     def is_subdomain_of(self, testUrl):
         """Returns True if Object.url is subdomain of the passed URL"""
-        parts = self._parse_hostname(testUrl)
-        return self.subdomain and self.domain == parts.get('domain')
+        parts = self._parse_url(testUrl)
+        return self.subdomain and self.hostname.find(parts.get('hostname')) > -1
 
     def _parse_url(self, string):
         parts = {}
