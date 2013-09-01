@@ -2,8 +2,7 @@ url.py
 ======
 A teeny tiny itty bitty Python library for extracting and manipulating URLs.
 
-Properties
-----------
+## Properties
 
 Passing a URL to url.py breaks apart the URL into its component parts:
 
@@ -20,8 +19,7 @@ Passing a URL to url.py breaks apart the URL into its component parts:
 
 These can be accessed at myUrl.protocol, myUrl.subdomain, and so on.
 
-Methods
--------
+## Methods
 
 Other fun things you can do:
 
