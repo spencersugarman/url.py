@@ -3,7 +3,7 @@ import url
 x = url.URL('http://username:password@www.example.co.uk:80/path/to/file?query=parameter&foo=bar#link')
 
 if x.protocol != 'http':
-    print 'protocol is broken'
+    print x.protocol + 'protocol is broken'
 
 if x.username != 'username':
     print 'username is broken'
@@ -45,11 +45,17 @@ if x.fragment != 'link':
     print 'fragment is broken'
 
 if x.url != 'http://username:password@www.example.co.uk:80/path/to/file?query=parameter&foo=bar#link':
-    print 'url is broken'
+    print x.url + 'url is broken'
 
 if x.is_subdomain_of('example.co.uk') != True:
     print 'is_subdomain_of is broken'
 
-x.url = 'http://dev.front1.example.co.uk'
-if x.is_subdomain_of('front1.example.co.uk') != True:
+# Test is_subdomain_of method with a sub-subdomain
+x2 = url.URL('http://dev.front1.example.co.uk')
+if x2.is_subdomain_of('front1.example.co.uk') != True:
     print 'subsubdomain is_subdomain_of is broken'
+
+# Test parent domain method
+x3 = url.URL('front1.example.co.uk')
+if x3.is_parent_domain_of('http://dev.front1.example.co.uk') != True:
+    print 'is_parent_domain_of is broken'
