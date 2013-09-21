@@ -148,16 +148,12 @@ class URL(object):
             queries[query[:pos]] = query[pos+1:]
         return queries
 
-    def add_query(self, query, parameter):
-        """Add a query and parameter to the query string;
+    def update_query(self, query, parameter):
+        """Updates a parameter in the query string;
 
-        overwrites current parameter if passed an existing query
+        Overwrites current parameter if passed an existing query
 
         """
-        self.update_query(self, query, parameter)
-
-    def update_query(self, query, parameter):
-        """Updates a parameter in the query string"""
         self._queries[query] = parameter
 
     def delete_query(self, query):
