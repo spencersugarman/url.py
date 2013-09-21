@@ -185,7 +185,8 @@ class URL(object):
         if numLevels > 0 and self.path and len(re.findall('/', self.path)):
             pos = self.path[:len(self.path)-2].rfind('/')
             self.path = self.path[:pos+1]
-            self.move_up_level(numLevels - 1)
+            if numLevels > 1:
+                self.move_up_level(numLevels - 1)
 
     def is_subdomain_of(self, testUrl):
         """Returns True if Object.url is subdomain of the passed URL"""
