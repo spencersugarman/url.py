@@ -30,13 +30,13 @@ Other fun things you can do:
 Add a key/value pair to the query string.
 
     myUrl = URL('http://example.com/?q1=p1')
-    myUrl.add_query('newQuery', 'newParam')
+    myUrl.update_query('newQuery', 'newParam')
     myUrl.url # http://example.com/?q1=p1&newQuery=newParam
     
 If a query with that name already exists, its parameter is updated:
 
     myUrl.url # http://example.com/?q1=p1&newQuery=newParam
-    myUrl.add_query('newQuery', 'reallyNewParam')
+    myUrl.update_query('newQuery', 'reallyNewParam')
     myUrl.url # http://example.com/?q1=p1&newQuery=reallyNewParam
     
 ### delete_query(queryName)
