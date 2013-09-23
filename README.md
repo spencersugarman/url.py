@@ -2,13 +2,14 @@ url.py
 ======
 A teeny tiny itty bitty Python library for extracting and manipulating URLs.
 
-_Covers about 13.6% of http://tools.ietf.org/html/rfc3986_
+_Covers about 1.36% of http://tools.ietf.org/html/rfc3986_
 
 ## Properties
 
 Passing a URL to url.py breaks apart the URL into its component parts:
 
 * Protocol ('http')
+* Username/Password ('myname:mypassword@')
 * Subdomain ('www')
 * Domain ('example.co.uk')
 * Top Level Domain ('uk')
