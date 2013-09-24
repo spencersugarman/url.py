@@ -169,13 +169,22 @@ class URL(object):
     def qet_queries(self):
         """Returns the query string as a dictionary"""
         return self._queries
-
+        
     def _parse_path(self, value):
         if value:
+            if value[0] != '/':
+                value = '/' + value
             pos = value.rfind('/')
             if pos > -1:
                 self.dirname = value[:pos+1]
-                self.basename = value[pos+1:]
+                basename = value[pos+1:]
+        else:
+            if self.useDefaults:
+                self.dirname = '/'
+            else:
+                self.dirname = None
+            basename = None
+        self._parse_basename(basename)
 
     def _parse_basename(self, value):
         if value:
@@ -185,11 +194,18 @@ class URL(object):
                 self.extension = value[pos+1:]
             elif self.fileExtensionOptional == True:
                 self.filename = value
+                self.extension = None
+        else:
+            self.filename = None
+            self.extension = None
 
     def path():
         doc = "The path property."
         def fget(self):
-            return ''.join((self.dirname, self.basename))
+            if self.basename is not None:
+                return ''.join((self.dirname, self.basename))
+            else: 
+                return self.dirname
         def fset(self, value):
             self._parse_path(value)
         return locals()
@@ -198,11 +214,13 @@ class URL(object):
     def basename():
         doc = "The basename property."
         def fget(self):
-            if self.extension:
+            if self.extension is not None:
                 return ''.join((self.filename, '.', self.extension))
             else:
                 return self.filename
         def fset(self, value):
+            if self.path is None:
+                self.path = '/'
             self._parse_basename(value)
         return locals()
     basename = property(**basename())

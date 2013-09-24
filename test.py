@@ -41,6 +41,16 @@ if x.filename != 'file':
 if x.extension != 'ext':
     print x.extension + ' extension is broken'
 
+x.path = '/'
+if x.path != '/':
+    print x.path + ' setting path is broken'
+x.basename = 'file.ext'
+if x.path != '/file.ext':
+    print x.path + ' setting basename is broken'
+x.path = 'path/to/file.ext'
+if x.path != '/path/to/file.ext':
+    print x.path + ' setting malformed path is broken'
+
 if x.query != 'query=parameter&foo=bar':
     print 'query is broken'
 
