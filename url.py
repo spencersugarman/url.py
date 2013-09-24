@@ -83,8 +83,10 @@ class URL(object):
         def fget(self):
             hostname = ''
             if self.subdomain:
-                hostname += self.subdomain + '.'
-            return hostname + self._domain
+                hostname = self.subdomain + '.'
+            if self._domain:
+                hostname += self._domain
+            return hostname or None
         def fset(self, value):
             # in an example URL http://user:pass@www.example.co.uk:80/dir/?foo=bar#link
             parts = self._parse_hostname(value)
@@ -115,25 +117,28 @@ class URL(object):
 
     def _parse_hostname(self, string):
         """Extract the subdomain, domain, tld, and sld"""
-        parts = {}
-        pos = string.find('.')
-        if pos > -1:
-            xlds = self._get_xlds(string)
-            parts['tld'] = xlds['tld']
-            parts['sld'] = xlds['sld']
-            matches = re.findall('(\.)', string)
-            if len(matches) == 1 or (xlds['sld'] and len(matches) == 2):
-                # example.com
-                # example.co.uk
-                parts['domain'] = string
+        if string:
+            parts = {}
+            pos = string.find('.')
+            if pos > -1:
+                xlds = self._get_xlds(string)
+                parts['tld'] = xlds['tld']
+                parts['sld'] = xlds['sld']
+                matches = re.findall('(\.)', string)
+                if len(matches) == 1 or (xlds['sld'] and len(matches) == 2):
+                    # example.com
+                    # example.co.uk
+                    parts['domain'] = string
+                else:
+                    # www.example.com
+                    # ww.example.co.uk
+                    pos = string.find('.')
+                    parts['domain'] = string[pos+1:]
+                    parts['subdomain'] = string[:pos]
             else:
-                # www.example.com
-                # ww.example.co.uk
-                pos = string.find('.')
-                parts['domain'] = string[pos+1:]
-                parts['subdomain'] = string[:pos]
+                parts['domain'] = string
         else:
-            parts['domain'] = string
+            parts = {'tld':None, 'sld':None, 'domain':None, 'subdomain':None}
         return parts
 
     def _build_query(self):
@@ -267,18 +272,21 @@ class URL(object):
 
     def _parse_url(self, string):
         parts = {}
-
         # http://username:password@www.example.com:80/path/to/file?query=parameter#link
         pos = string.find('#')
         if pos > -1:
             parts['fragment'] = string[pos+1:]
             string = string[:pos]
+        else:
+            parts['fragment'] = None
 
         # http://username:password@www.example.com:80/path/to/file?query=parameter
         pos = string.find('?')
         if pos > -1:
             parts['query'] = string[pos+1:]
             string = string[:pos]
+        else:
+            parts['query'] = None
 
         # http://username:password@www.example.com:80/path/to/file
         if string[0:1] == '//':
@@ -291,6 +299,8 @@ class URL(object):
                 string = string[pos+3:]
             elif self.useDefaults:
                 parts['protocol'] = 'http'
+            else:
+                parts['protocol'] = None
 
         # username:password@www.example.com:80/path/to/file
         pos = string.find('@')
@@ -298,6 +308,8 @@ class URL(object):
             userinfo = string[:pos].split(':')
             parts['username'], parts['password'] = userinfo[0], userinfo[1]
             string = string[pos+1:]
+        else:
+            parts['username'], parts['password'] = None, None
 
         # www.example.com:80/path/to/file
         pos = string.find('/')
@@ -306,21 +318,27 @@ class URL(object):
             string = string[:pos]
         elif self.useDefaults:
             parts['path'] = '/'
+        else: 
+            parts['path'] = None
 
         # www.example.com:80
         pos = string.find(':')
         if pos > -1:
             parts['port'] = string[pos+1:]
             string = string[:pos]
-        elif self.useDefaults and self.protocol:
+        elif self.useDefaults and self.protocol is not None:
             if self.protocol in self._defaultPorts:
                 parts['port'] = self._defaultPorts[self.protocol]
+        else:
+            parts['port'] = None
 
         # www.example.com
         if len(string) > 0:
             parts['hostname'] = string
+        elif parts['path'] is None:
+            raise Exception("Must provide a valid hostname or path")
         else:
-            raise Exception("Must provide a valid hostname")
+            parts['hostname'] = None
 
         return parts
 
