@@ -171,6 +171,7 @@ class URL(object):
         return self._queries
         
     def _parse_path(self, value):
+        """Returns a dict with the dirname and basename of the passed value"""
         parts = {}
         if value:
             if value[0] != '/':
@@ -188,6 +189,7 @@ class URL(object):
         return parts
 
     def _parse_basename(self, value):
+        """Returns a dict with the filename and extension of the passed value"""
         parts = {}
         if value:
             pos = value.rfind('.')
