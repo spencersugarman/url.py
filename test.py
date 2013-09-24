@@ -32,19 +32,14 @@ if x.port != '80':
 if x.path != '/path/to/file.ext':
     print x.path + ' path is broken'
 
-
-x.fileParts = x.get_requested_file();
-if type(x.fileParts) != dict:
-    print 'get_requested_file returning bad type'
-if x.fileParts['dirname'] != '/path/to/':
-    print 'get_requested_file returning bad dirname'
-if x.fileParts['basename'] != 'file.ext':
-    print 'get_requested_file returning bad basename'
-if x.fileParts['filename'] != 'file':
-    print 'get_requested_file returning bad filename'
-if x.fileParts['extension'] != 'ext':
-    print 'get_requested_file returning bad file ext'
-
+if x.dirname != '/path/to/':
+    print x.dirname + ' dirname is broken'
+if x.basename != 'file.ext':
+    print x.basename + ' basename is broken'
+if x.filename != 'file':
+    print x.filename + ' filename is broken'
+if x.extension != 'ext':
+    print x.extension + ' extension is broken'
 
 if x.query != 'query=parameter&foo=bar':
     print 'query is broken'

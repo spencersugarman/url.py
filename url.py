@@ -2,7 +2,7 @@ import re
 
 class URL(object):
     """A class for extracting various parts of a URL"""
-    def __init__ (self, value, useDefaults=False):
+    def __init__ (self, value, useDefaults=False, fileExtensionOptional=False):
         # If useDefaults=True, protocol, port, and path will be set to defaults if missing
         self.useDefaults = useDefaults is True
         self.url = value
@@ -169,36 +169,43 @@ class URL(object):
     def qet_queries(self):
         """Returns the query string as a dictionary"""
         return self._queries
-        
-    def get_requested_file(self, extensionOptional=False):
-        """"Returns a dictionary containing dirname, basename, filename, and extension
 
-        dirname = parent directory's path, e.g. "/path/to/dir/"
-        basename = path component after final backward slash, e.g. "index.html"
-        filename = name of file, e.g. "index"
-        extension = extension of file, e.g. "html"
-
-        """
-        if self.path:
-            parts = {}
-            pos = self.path.rfind('/')
-            # `path` always includes at least one '/' if it exists
-            # so no need to check if pos > -1
-            parts['dirname'] = self.path[:pos+1]
-            parts['basename'] = self.path[pos+1:]
-            pos = parts['basename'].rfind('.')
+    def _parse_path(self, value):
+        if value:
+            pos = value.rfind('/')
             if pos > -1:
-                parts['filename'] = parts['basename'][:pos]
-                parts['extension'] = parts['basename'][pos+1:]
-            elif extensionOptional == True:
-                parts['filename'] = parts['basename']
-                parts['extension'] = None
+                self.dirname = value[:pos+1]
+                self.basename = value[pos+1:]
+
+    def _parse_basename(self, value):
+        if value:
+            pos = value.rfind('.')
+            if pos > -1:
+                self.filename = value[:pos]
+                self.extension = value[pos+1:]
+            elif self.fileExtensionOptional == True:
+                self.filename = value
+
+    def path():
+        doc = "The path property."
+        def fget(self):
+            return ''.join((self.dirname, self.basename))
+        def fset(self, value):
+            self._parse_path(value)
+        return locals()
+    path = property(**path())
+
+    def basename():
+        doc = "The basename property."
+        def fget(self):
+            if self.extension:
+                return ''.join((self.filename, '.', self.extension))
             else:
-                parts['filename'] = None
-                parts['extension'] = None
-            return parts
-        else:
-            return None
+                return self.filename
+        def fset(self, value):
+            self._parse_basename(value)
+        return locals()
+    basename = property(**basename())
 
     def move_up_level(self, numLevels=1):
         """Moves the URL path up one level in the directory tree;
