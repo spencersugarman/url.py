@@ -1,9 +1,9 @@
 import url
 
-x = url.URL('http://username:password@www.example.co.uk:80/path/to/file?query=parameter&foo=bar#link')
+x = url.URL('http://username:password@www.example.co.uk:80/path/to/file.ext?query=parameter&foo=bar#link')
 
 if x.protocol != 'http':
-    print x.protocol + 'protocol is broken'
+    print x.protocol + ' protocol is broken'
 
 if x.username != 'username':
     print 'username is broken'
@@ -24,13 +24,27 @@ if x.tld != 'uk':
     print 'tld is broken'
 
 if x.sld != 'co':
-    print x.sld + 'sld is broken'
+    print x.sld + ' sld is broken'
 
 if x.port != '80':
     print 'port is broken'
 
-if x.path != '/path/to/file':
-    print x.path + 'path is broken'
+if x.path != '/path/to/file.ext':
+    print x.path + ' path is broken'
+
+
+x.fileParts = x.get_requested_file();
+if type(x.fileParts) != dict:
+    print 'get_requested_file returning bad type'
+if x.fileParts['dirname'] != '/path/to/':
+    print 'get_requested_file returning bad dirname'
+if x.fileParts['basename'] != 'file.ext':
+    print 'get_requested_file returning bad basename'
+if x.fileParts['filename'] != 'file':
+    print 'get_requested_file returning bad filename'
+if x.fileParts['extension'] != 'ext':
+    print 'get_requested_file returning bad file ext'
+
 
 if x.query != 'query=parameter&foo=bar':
     print 'query is broken'
@@ -44,8 +58,16 @@ if x.get_query('foo') != 'bar':
 if x.fragment != 'link':
     print 'fragment is broken'
 
-if x.url != 'http://username:password@www.example.co.uk:80/path/to/file?query=parameter&foo=bar#link':
-    print x.url + 'url is broken'
+if x.url != 'http://username:password@www.example.co.uk:80/path/to/file.ext?query=parameter&foo=bar#link':
+    print x.url + ' url is broken'
+
+x.update_query('biz', 'bazz')
+if x.get_query('biz') != 'bazz':
+    print 'update_query is broken'
+
+x.update_query('biz', 'booz')
+if x.get_query('biz') != 'booz':
+    print 'update_query overwrite is broken'
 
 if x.is_subdomain_of('example.co.uk') != True:
     print 'is_subdomain_of is broken'

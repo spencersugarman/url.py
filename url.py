@@ -169,6 +169,36 @@ class URL(object):
     def qet_queries(self):
         """Returns the query string as a dictionary"""
         return self._queries
+        
+    def get_requested_file(self, extensionOptional=False):
+        """"Returns a dictionary containing dirname, basename, filename, and extension
+
+        dirname = parent directory's path, e.g. "/path/to/dir/"
+        basename = path component after final backward slash, e.g. "index.html"
+        filename = name of file, e.g. "index"
+        extension = extension of file, e.g. "html"
+
+        """
+        if self.path:
+            parts = {}
+            pos = self.path.rfind('/')
+            # `path` always includes at least one '/' if it exists
+            # so no need to check if pos > -1
+            parts['dirname'] = self.path[:pos+1]
+            parts['basename'] = self.path[pos+1:]
+            pos = parts['basename'].rfind('.')
+            if pos > -1:
+                parts['filename'] = parts['basename'][:pos]
+                parts['extension'] = parts['basename'][pos+1:]
+            elif extensionOptional == True:
+                parts['filename'] = parts['basename']
+                parts['extension'] = None
+            else:
+                parts['filename'] = None
+                parts['extension'] = None
+            return parts
+        else:
+            return None
 
     def move_up_level(self, numLevels=1):
         """Moves the URL path up one level in the directory tree;
