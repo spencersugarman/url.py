@@ -16,7 +16,11 @@ Passing a URL to url.py breaks apart the URL into its component parts:
 * Second Level Domain ('co')
 * Hostname ('www.example.co.uk')
 * Port ('80')
-* Path ('/pages/about/')
+* Path ('/pages/about/index.html')
+* Dirname ('/pages/about/')
+* Basename ('index.html')
+* Filename ('index')
+* Extension ('html')
 * Query ('?user=dan&redirect=1')
 * Fragment ('#link')
 
