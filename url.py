@@ -171,33 +171,35 @@ class URL(object):
         return self._queries
         
     def _parse_path(self, value):
+        parts = {}
         if value:
             if value[0] != '/':
                 value = '/' + value
             pos = value.rfind('/')
             if pos > -1:
-                self.dirname = value[:pos+1]
-                basename = value[pos+1:]
+                parts['dirname'] = value[:pos+1]
+                parts['basename'] = value[pos+1:]
         else:
             if self.useDefaults:
-                self.dirname = '/'
+                parts['dirname'] = '/'
             else:
-                self.dirname = None
-            basename = None
-        self._parse_basename(basename)
+                parts['dirname'] = None
+            parts['basename'] = None
+        return parts
 
     def _parse_basename(self, value):
+        parts = {}
         if value:
             pos = value.rfind('.')
             if pos > -1:
-                self.filename = value[:pos]
-                self.extension = value[pos+1:]
+                parts['filename'] = value[:pos]
+                parts['extension'] = value[pos+1:]
             elif self.fileExtensionOptional == True:
-                self.filename = value
-                self.extension = None
+                parts['filename'] = value
+                parts['extension'] = None
         else:
-            self.filename = None
-            self.extension = None
+            parts['filename'] = None
+            parts['extension'] = None
 
     def path():
         doc = "The path property."
@@ -207,7 +209,9 @@ class URL(object):
             else: 
                 return self.dirname
         def fset(self, value):
-            self._parse_path(value)
+            parts = self._parse_path(value)
+            self.dirname = parts['dirname']
+            self.basename = parts['basename']
         return locals()
     path = property(**path())
 
@@ -221,7 +225,9 @@ class URL(object):
         def fset(self, value):
             if self.path is None:
                 self.path = '/'
-            self._parse_basename(value)
+            parts = self._parse_basename(value)
+            self.filename = parts['filename']
+            self.extension = parts['extension']
         return locals()
     basename = property(**basename())
 
