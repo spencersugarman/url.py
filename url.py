@@ -200,6 +200,7 @@ class URL(object):
         else:
             parts['filename'] = None
             parts['extension'] = None
+        return parts
 
     def path():
         doc = "The path property."
@@ -218,13 +219,13 @@ class URL(object):
     def basename():
         doc = "The basename property."
         def fget(self):
-            if self.extension is not None:
-                return ''.join((self.filename, '.', self.extension))
-            else:
+            if self.extension is None:
                 return self.filename
+            else:
+                return ''.join((self.filename, '.', self.extension))
         def fset(self, value):
-            if self.path is None:
-                self.path = '/'
+            if self.dirname is None:
+                self.dirname = '/'
             parts = self._parse_basename(value)
             self.filename = parts['filename']
             self.extension = parts['extension']
