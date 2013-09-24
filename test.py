@@ -95,3 +95,15 @@ if x4.is_parent_domain_of('http://example.co.uk') != False:
 x5 = URL('/path/to/index.html')
 if x5.hostname != None:
     print x5.hostname + ' hostname for relative path is broken'
+
+x5.move_up_level()
+if x5.url != '/path/':
+    print x5.url + ' move_up_level is broken'
+
+x5.move_up_level()
+if x5.url != '/':
+    print x5.url + ' move_up_level is broken'
+
+x5.move_up_level()
+if x5.url != '/':
+    print x5.url + ' move_up_level is broken'
