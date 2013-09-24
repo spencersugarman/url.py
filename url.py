@@ -248,7 +248,7 @@ class URL(object):
         # if at /path/to/level1/level2/
         # move_up_dir() will return /path/to/level1/
         if numLevels > 0 and self.path and len(re.findall('/', self.path)):
-            pos = self.path[:len(self.path)-2].rfind('/')
+            pos = self.path[:-2].rfind('/')
             self.path = self.path[:pos+1]
             if numLevels > 1:
                 self.move_up_level(numLevels - 1)
