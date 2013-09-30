@@ -204,7 +204,7 @@ class URL(object):
         return queries
 
     def update_query(self, query, parameter):
-        """Updates a parameter in the query string;
+        """Updates a parameter in the query string.
 
         Overwrites current parameter if passed an existing query
 
@@ -257,7 +257,7 @@ class URL(object):
         return parts
 
     def move_up_level(self, numLevels=1):
-        """Moves the URL path up one level in the directory tree;
+        """Moves the URL path up one level in the directory tree.
 
         Recurses if numLevels is greater than 1
 
