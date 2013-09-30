@@ -10,102 +10,96 @@ class URL(object):
     def __str__(self):
         return self.url
 
-    def url():
-        doc = "The url property."
-        def fget(self):
-            # build the url string
-            url = ''
-            if self.protocol:
-                url = ''.join((self.protocol, '://'))
-            if self.username:
-                url = ''.join((url, self.username, ':', self.password, '@'))
-            if self.hostname:
-                url = ''.join((url, self.hostname))
-            if self.port:
-                url = ''.join((url, ':', str(self.port)))
-            if self.path:
-                url = ''.join((url, self.path))
-            if self.query:
-                url = ''.join((url, '?', self.query))
-            if self.fragment:
-                url = ''.join((url, '#', self.fragment))
-            return url
-        def fset(self, value):
-            # in an example URL http://user:pass@www.example.co.uk:80/dir/?foo=bar#link
-            parts = self._parse_url(value)
-            # protocol is 'http'
-            self.protocol = parts.get('protocol')
-            # username is 'user'
-            self.username = parts.get('username')
-            # password is 'pass'
-            self.password = parts.get('password')
-            # hostname is 'www.example.co.uk'
-            self.hostname = parts.get('hostname')
-            # port is '80'
-            self.port = parts.get('port')
-            # path is '/dir/'
-            self.path = parts.get('path')
-            # query is 'foo=bar'
-            self.query = parts.get('query')
-            # fragment is 'link'
-            self.fragment = parts.get('fragment')
-        return locals()
-    url = property(**url())
+    @property
+    def url(self):
+        """The url property."""
+        url = ''
+        if self.protocol:
+            url = ''.join((self.protocol, '://'))
+        if self.username:
+            url = ''.join((url, self.username, ':', self.password, '@'))
+        if self.hostname:
+            url = ''.join((url, self.hostname))
+        if self.port:
+            url = ''.join((url, ':', str(self.port)))
+        if self.path:
+            url = ''.join((url, self.path))
+        if self.query:
+            url = ''.join((url, '?', self.query))
+        if self.fragment:
+            url = ''.join((url, '#', self.fragment))
+        return url
+    @url.setter
+    def url(self, value):
+        # in an example URL http://user:pass@www.example.co.uk:80/dir/?foo=bar#link
+        parts = self._parse_url(value)
+        # protocol is 'http'
+        self.protocol = parts.get('protocol')
+        # username is 'user'
+        self.username = parts.get('username')
+        # password is 'pass'
+        self.password = parts.get('password')
+        # hostname is 'www.example.co.uk'
+        self.hostname = parts.get('hostname')
+        # port is '80'
+        self.port = parts.get('port')
+        # path is '/dir/'
+        self.path = parts.get('path')
+        # query is 'foo=bar'
+        self.query = parts.get('query')
+        # fragment is 'link'
+        self.fragment = parts.get('fragment')
 
-    def protocol():
-        doc = "The protocol property."
-        def fget(self):
-            return self._protocol
-        def fset(self, value):
-            if value is None:
-                self._protocol = None
-            else:
-                match = re.match('[a-z][a-z0-9+-]*', value, re.I)
-                if match is None:
-                    raise Exception("This is not a valid protocol")
-                self._protocol = value
-        return locals()
-    protocol = property(**protocol())
+    @property
+    def protocol(self):
+        """The protocol property."""
+        return self._protocol
+    @protocol.setter
+    def protocol(self, value):
+        if value is None:
+            self._protocol = None
+        else:
+            match = re.match('[a-z][a-z0-9+-]*', value, re.I)
+            if match is None:
+                raise Exception("This is not a valid protocol")
+            self._protocol = value
 
-    def query():
-        doc = "The query property."
-        def fget(self):
-            return self._build_query()
-        def fset(self, value):
-            if value is None:
-                self._queries = None
-            else:
-                self._queries = self._parse_query(value)
-        return locals()
-    query = property(**query())
+    @property
+    def query(self):
+        """The query property."""
+        return self._build_query()    
+    @query.setter
+    def query(self, value):
+        if value is None:
+            self._queries = None
+        else:
+            self._queries = self._parse_query(value)
 
-    def hostname():
-        doc = "The hostname property."
-        def fget(self):
-            hostname = ''
-            if self.subdomain:
-                hostname = self.subdomain + '.'
-            if self._domain:
-                hostname += self._domain
-            return hostname or None
-        def fset(self, value):
-            # in an example URL http://user:pass@www.example.co.uk:80/dir/?foo=bar#link
-            parts = self._parse_hostname(value)
-            # subdomain is 'www'
-            self.subdomain = parts.get('subdomain')
-            self._set_domain(parts)
-        return locals()
-    hostname = property(**hostname())
+    @property
+    def hostname(self):
+        """The hostname property."""
+        hostname = ''
+        if self.subdomain:
+            hostname = self.subdomain + '.'
+        if self._domain:
+            hostname += self._domain
+        return hostname or None
+    @hostname.setter
+    def hostname(self, value):
+        # in an example URL http://user:pass@www.example.co.uk:80/dir/?foo=bar#link
+        parts = self._parse_hostname(value)
+        # subdomain is 'www'
+        self.subdomain = parts.get('subdomain')
+        self._set_domain(parts)
 
-    def domain():
-        doc = "The domain property."
-        def fget(self):
-            return self.hostname[len(self.subdomain)+1:]
-        def fset(self, value):
-            parts = self._parse_hostname(value)
-            self._set_domain(parts)
-        return locals()
-    domain = property(**domain())
+    @property
+    def domain(self):
+        """The domain property."""
+        return self.hostname[len(self.subdomain)+1:]
+    @domain.setter
+    def domain(self, value):
+        parts = self._parse_hostname(value)
+        self._set_domain(parts)
 
     def _set_domain(self, parts):
         # in an example URL http://user:pass@www.example.co.uk:80/dir/?foo=bar#link
@@ -115,6 +109,34 @@ class URL(object):
         self.tld = parts.get('tld')
         # second level domain is 'co'
         self.sld = parts.get('sld')
+
+    @property
+    def path(self):
+        """The path property."""
+        if self.basename is not None:
+            return ''.join((self.dirname, self.basename))
+        else: 
+            return self.dirname
+    @path.setter
+    def path(self, value):
+        parts = self._parse_path(value)
+        self.dirname = parts['dirname']
+        self.basename = parts['basename']
+
+    @property
+    def basename(self):
+        """The basename property."""
+        if self.extension is None:
+            return self.filename
+        else:
+            return ''.join((self.filename, '.', self.extension))
+    @basename.setter
+    def basename(self, value):
+        if self.dirname is None:
+            self.dirname = '/'
+        parts = self._parse_basename(value)
+        self.filename = parts['filename']
+        self.extension = parts['extension']
 
     def _parse_hostname(self, string):
         """Extract the subdomain, domain, tld, and sld"""
@@ -209,36 +231,6 @@ class URL(object):
             parts['filename'] = None
             parts['extension'] = None
         return parts
-
-    def path():
-        doc = "The path property."
-        def fget(self):
-            if self.basename is not None:
-                return ''.join((self.dirname, self.basename))
-            else: 
-                return self.dirname
-        def fset(self, value):
-            parts = self._parse_path(value)
-            self.dirname = parts['dirname']
-            self.basename = parts['basename']
-        return locals()
-    path = property(**path())
-
-    def basename():
-        doc = "The basename property."
-        def fget(self):
-            if self.extension is None:
-                return self.filename
-            else:
-                return ''.join((self.filename, '.', self.extension))
-        def fset(self, value):
-            if self.dirname is None:
-                self.dirname = '/'
-            parts = self._parse_basename(value)
-            self.filename = parts['filename']
-            self.extension = parts['extension']
-        return locals()
-    basename = property(**basename())
 
     def move_up_level(self, numLevels=1):
         """Moves the URL path up one level in the directory tree;
