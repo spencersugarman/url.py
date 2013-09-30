@@ -2,9 +2,17 @@ import re
 
 class URL(object):
     """A class for extracting various parts of a URL"""
-    def __init__ (self, value, useDefaults=False, fileExtensionOptional=False):
-        # If useDefaults=True, protocol, port, and path will be set to defaults if missing
+    def __init__ (self, value, useDefaults=False, fileExtensionOptional=False, defaults={}):
+        # If useDefaults=True, protocol and port will be set to defaults if missing
         self.useDefaults = useDefaults is True
+        self.defaults = {
+            'protocol':'http', 
+            'ports': {
+                'ftp': '21',
+                'http': '80',
+                'https': '443'
+            }
+        }
         self.url = value
 
     def __str__(self):
@@ -63,6 +71,21 @@ class URL(object):
             if match is None:
                 raise Exception("This is not a valid protocol")
             self._protocol = value
+
+    @property
+    def port(self):
+        """The port property."""
+        return self._port
+    @port.setter
+    def port(self, value):
+        if value is None:
+            if self.useDefaults and self.protocol is not None:
+                if self.protocol in self.defaults['ports']:
+                    self._port = self.defaults['ports'][self.protocol]
+            else:
+                self._port = None
+        else:
+            self._port = value
 
     @property
     def query(self):
@@ -207,10 +230,7 @@ class URL(object):
                 parts['dirname'] = value[:pos+1]
                 parts['basename'] = value[pos+1:]
         else:
-            if self.useDefaults:
-                parts['dirname'] = '/'
-            else:
-                parts['dirname'] = None
+            parts['dirname'] = '/'
             parts['basename'] = None
         return parts
 
@@ -289,7 +309,7 @@ class URL(object):
                 parts['protocol'] = value[:pos].lower()
                 value = value[pos+3:]
             elif self.useDefaults:
-                parts['protocol'] = 'http'
+                parts['protocol'] = self.defaults['protocol']
             else:
                 parts['protocol'] = None
 
@@ -317,9 +337,6 @@ class URL(object):
         if pos > -1:
             parts['port'] = value[pos+1:]
             value = value[:pos]
-        elif self.useDefaults and self.protocol is not None:
-            if self.protocol in self._defaultPorts:
-                parts['port'] = self._defaultPorts[self.protocol]
         else:
             parts['port'] = None
 
@@ -347,12 +364,6 @@ class URL(object):
                 if value in tldSlds:
                     sld = value
         return {"tld": tld, "sld": sld}
-
-    _defaultPorts = {
-        'ftp': '21',
-        'http': '80',
-        'https': '443'
-    }
 
     # from https://github.com/medialize/URI.js/blob/gh-pages/src/SecondLevelDomains.js
     _slds = {

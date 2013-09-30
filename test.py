@@ -87,6 +87,11 @@ x3 = URL('front1.example.co.uk')
 if x3.is_parent_domain_of('http://dev.front1.example.co.uk') != True:
     print 'is_parent_domain_of is broken'
 
+# Test useDefaults
+x3 = URL('front1.example.co.uk', useDefaults=True)
+if x3.url != 'http://front1.example.co.uk:80/':
+    print x3.url + ' useDefaults is broken'
+
 # Test parent domain method with same domain
 x4 = URL('example.co.uk')
 if x4.is_parent_domain_of('http://example.co.uk') != False:
