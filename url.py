@@ -42,21 +42,21 @@ class URL(object):
         # in an example URL http://user:pass@www.example.co.uk:80/dir/?foo=bar#link
         parts = self._parse_url(value)
         # protocol is 'http'
-        self.protocol = parts.get('protocol')
+        self.protocol = parts['protocol']
         # username is 'user'
-        self.username = parts.get('username')
+        self.username = parts['username']
         # password is 'pass'
-        self.password = parts.get('password')
+        self.password = parts['password']
         # hostname is 'www.example.co.uk'
-        self.hostname = parts.get('hostname')
+        self.hostname = parts['hostname']
         # port is '80'
-        self.port = parts.get('port')
+        self.port = parts['port']
         # path is '/dir/'
-        self.path = parts.get('path')
+        self.path = parts['path']
         # query is 'foo=bar'
-        self.query = parts.get('query')
+        self.query = parts['query']
         # fragment is 'link'
-        self.fragment = parts.get('fragment')
+        self.fragment = parts['fragment']
 
     @property
     def protocol(self):
@@ -267,15 +267,15 @@ class URL(object):
     def is_subdomain_of(self, testUrl):
         """Returns True if Object.url is subdomain of the passed URL"""
         parts = self._parse_url(testUrl)
-        return self.subdomain and self.hostname.find(parts.get('hostname')) > -1
+        return self.subdomain and self.hostname.find(parts['hostname']) > -1
 
     def is_parent_domain_of(self, testUrl):
         """Returns True if Object.url is parent domain of the passed URL"""
         parts = self._parse_url(testUrl)
-        testHostname = parts.get('hostname')
+        testHostname = parts['hostname']
         if testHostname is not None:
             testHostnameParts = self._parse_hostname(testHostname)
-            testSubdomain = testHostnameParts.get('subdomain')
+            testSubdomain = testHostnameParts['subdomain']
             if testSubdomain is not None:
                 # test URL must have subdomain to have a parent domain
                 return testHostname.find(self.hostname) > -1
@@ -355,7 +355,7 @@ class URL(object):
             pos = value.rfind('.')
             tld = value[pos+1:]
             value = value[:pos]
-        tldSlds = self._slds.get(tld)
+        tldSlds = self._slds[tld]
         if tldSlds is not None:
             tldSlds = tldSlds.split('|')
             pos = value.rfind('.')
