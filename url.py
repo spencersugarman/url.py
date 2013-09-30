@@ -5,6 +5,7 @@ class URL(object):
     def __init__ (self, value, useDefaults=False, fileExtensionOptional=False, defaults={}):
         # If useDefaults=True, protocol and port will be set to defaults if missing
         self.useDefaults = useDefaults is True
+        self.fileExtensionOptional = fileExtensionOptional is True
         self.defaults = {
             'protocol':'http', 
             'ports': {
@@ -163,7 +164,12 @@ class URL(object):
 
     def _parse_hostname(self, value):
         """Extract the subdomain, domain, tld, and sld"""
-        parts = {'tld':None, 'sld':None, 'domain':None, 'subdomain':None}
+        parts = {
+            'tld':None, 
+            'sld':None, 
+            'domain':None, 
+            'subdomain':None
+        }
         if value:
             pos = value.find('.')
             if pos > -1:
@@ -221,22 +227,26 @@ class URL(object):
         
     def _parse_path(self, value):
         """Returns a dict with the dirname and basename of the passed value"""
-        parts = {}
+        parts = {
+            'dirname': None,
+            'basename': None
+        }
         if value:
             if value[0] != '/':
                 value = '/' + value
             pos = value.rfind('/')
-            if pos > -1:
-                parts['dirname'] = value[:pos+1]
-                parts['basename'] = value[pos+1:]
+            parts['dirname'] = value[:pos+1]
+            parts['basename'] = value[pos+1:]
         else:
             parts['dirname'] = '/'
-            parts['basename'] = None
         return parts
 
     def _parse_basename(self, value):
         """Returns a dict with the filename and extension of the passed value"""
-        parts = {}
+        parts = {
+            'filename': None,
+            'extension': None
+        }
         if value:
             pos = value.rfind('.')
             if pos > -1:
@@ -244,21 +254,17 @@ class URL(object):
                 parts['extension'] = value[pos+1:]
             elif self.fileExtensionOptional == True:
                 parts['filename'] = value
-                parts['extension'] = None
-        else:
-            parts['filename'] = None
-            parts['extension'] = None
         return parts
 
     def move_up_level(self, numLevels=1):
         """Moves the URL path up one level in the directory tree;
 
-        recurses if numLevels is greater than 1
+        Recurses if numLevels is greater than 1
 
         """
         # if at /path/to/level1/level2/
         # move_up_dir() will return /path/to/level1/
-        if numLevels > 0 and self.dirname and len(re.findall('/', self.dirname)):
+        if numLevels > 0 and self.dirname:
             pos = self.dirname[:-1].rfind('/')
             self.path = self.dirname[:pos+1]
             if numLevels > 1:
@@ -282,7 +288,16 @@ class URL(object):
         return False
 
     def _parse_url(self, value):
-        parts = {}
+        parts = {
+            'fragment': None,
+            'query': None,
+            'protocol': None,
+            'username': None,
+            'password': None,
+            'path': None,
+            'port': None,
+            'hostname': None
+        }
         # http://username:password@www.example.com:80/path/to/file?query=parameter#link
         pos = value.find('#')
         if pos > -1:
