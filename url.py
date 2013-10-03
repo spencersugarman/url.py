@@ -24,19 +24,19 @@ class URL(object):
         """The url property."""
         url = ''
         if self.protocol:
-            url = ''.join((self.protocol, '://'))
+            url = self.protocol + '://'
         if self.username:
-            url = ''.join((url, self.username, ':', self.password, '@'))
+            url += self.username + ':' = self.password + '@'
         if self.hostname:
-            url = ''.join((url, self.hostname))
+            url += self.hostname
         if self.port:
-            url = ''.join((url, ':', str(self.port)))
+            url += ':' + str(self.port)
         if self.path:
-            url = ''.join((url, self.path))
+            url += self.path
         if self.query:
-            url = ''.join((url, '?', self.query))
+            url += '?' + self.query
         if self.fragment:
-            url = ''.join((url, '#', self.fragment))
+            url += '#' + self.fragment
         return url
     @url.setter
     def url(self, value):
@@ -124,7 +124,7 @@ class URL(object):
     def path(self):
         """The path property."""
         if self.basename is not None:
-            return ''.join((self.dirname, self.basename))
+            return self.dirname + self.basename
         else: 
             return self.dirname
     @path.setter
@@ -139,7 +139,7 @@ class URL(object):
         if self.extension is None:
             return self.filename
         else:
-            return ''.join((self.filename, '.', self.extension))
+            return self.filename + '.' + self.extension
     @basename.setter
     def basename(self, value):
         if self.dirname is None:
@@ -360,8 +360,6 @@ class URL(object):
             parts['hostname'] = value
         elif parts['path'] is None:
             raise Exception("Must provide a valid hostname or path")
-        else:
-            parts['hostname'] = None
 
         return parts
 
