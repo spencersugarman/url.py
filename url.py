@@ -314,7 +314,6 @@ class URL(object):
             value = value[:pos]
         else:
             parts['fragment'] = None
-
         # http://username:password@www.example.com:80/path/to/file?query=parameter
         pos = value.find('?')
         if pos > -1:
@@ -322,7 +321,6 @@ class URL(object):
             value = value[:pos]
         else:
             parts['query'] = None
-
         # http://username:password@www.example.com:80/path/to/file
         if value[0:1] == '//':
             # no scheme given
@@ -336,7 +334,6 @@ class URL(object):
                 parts['protocol'] = self.defaults['protocol']
             else:
                 parts['protocol'] = None
-
         # username:password@www.example.com:80/path/to/file
         splits = value.split('@', 1)
         value = splits.pop()
@@ -345,7 +342,6 @@ class URL(object):
             parts['username'], parts['password'] = userinfo[0], userinfo[1]
         else:
             parts['username'], parts['password'] = None, None
-
         # www.example.com:80/path/to/file
         splits = value.split('/', 1)
         value = splits[0]
@@ -355,7 +351,6 @@ class URL(object):
             parts['path'] = '/'
         else: 
             parts['path'] = None
-
         # www.example.com:80
         splits = value.split(':', 1)
         value = splits[0]
@@ -363,13 +358,11 @@ class URL(object):
             parts['port'] = splits[1]
         else:
             parts['port'] = None
-
         # www.example.com
         if len(value) > 0:
             parts['hostname'] = value
         elif parts['path'] is None:
             raise Exception("Must provide a valid hostname or path")
-
         return parts
 
     def validate (self, value):
