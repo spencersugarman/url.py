@@ -118,8 +118,10 @@ class TestSettings(unittest.TestCase):
         self.assertEqual(self.url.url, 'http://front1.example.co.uk:80/')
 
     def test_file_ext_optional(self):
-        self.url = URL('example.com/index', fileExtensionOptional=True)
-        self.assertEqual(self.url.path, '/index')
+        self.url = URL('example.com/path/to/index', fileExtensionOptional=True)
+        self.assertEqual(self.url.path, '/path/to/index')
+        self.url.move_up_level()
+        self.assertEqual(self.url.path, '/path/')
 
 if __name__ == '__main__':
     unittest.main()
