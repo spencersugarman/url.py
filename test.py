@@ -1,114 +1,123 @@
+import unittest
 from url import URL
 
-x = URL('http://username:password@www.example.co.uk:80/path/to/file.ext?query=parameter&foo=bar#link')
+class TestUrlComponents(unittest.TestCase):
 
-if x.protocol != 'http':
-    print x.protocol + ' protocol is broken'
+    def setUp(self):
+        self.url = URL('http://username:password@www.example.co.uk:80/path/to/file.ext?query=parameter&foo=bar#link')
 
-if x.username != 'username':
-    print 'username is broken'
+    def test_protocol(self):
+        self.assertEqual(self.url.protocol, 'http')
 
-if x.password != 'password':
-    print 'password is broken'
+    def test_username(self):
+        self.assertEqual(self.url.username, 'username')
 
-if x.hostname != 'www.example.co.uk':
-    print 'hostname is broken'
+    def test_password(self):
+        self.assertEqual(self.url.password,'password')
 
-if x.subdomain != 'www':
-    print 'subdomain is broken'
+    def test_hostname(self):
+        self.assertEqual(self.url.hostname,'www.example.co.uk')
 
-if x.domain != 'example.co.uk':
-    print 'domain is broken'
+    def test_subdomain(self):
+        self.assertEqual(self.url.subdomain,'www')
 
-if x.tld != 'uk':
-    print 'tld is broken'
+    def test_domain(self):
+        self.assertEqual(self.url.domain,'example.co.uk')
 
-if x.sld != 'co':
-    print x.sld + ' sld is broken'
+    def test_tld(self):
+        self.assertEqual(self.url.tld,'uk')
 
-if x.port != '80':
-    print 'port is broken'
+    def test_sld(self):
+        self.assertEqual(self.url.sld,'co')
 
-if x.path != '/path/to/file.ext':
-    print x.path + ' path is broken'
+    def test_port(self):
+        self.assertEqual(self.url.port,'80')
 
-if x.dirname != '/path/to/':
-    print x.dirname + ' dirname is broken'
-if x.basename != 'file.ext':
-    print x.basename + ' basename is broken'
-if x.filename != 'file':
-    print x.filename + ' filename is broken'
-if x.extension != 'ext':
-    print x.extension + ' extension is broken'
+    def test_path(self):
+        self.assertEqual(self.url.path,'/path/to/file.ext')
 
-x.path = '/'
-if x.path != '/':
-    print x.path + ' setting path is broken'
-x.basename = 'file.ext'
-if x.path != '/file.ext':
-    print x.path + ' setting basename is broken'
-x.path = 'path/to/file.ext'
-if x.path != '/path/to/file.ext':
-    print x.path + ' setting malformed path is broken'
+    def test_dirname(self):
+        self.assertEqual(self.url.dirname,'/path/to/')
 
-if x.query != 'query=parameter&foo=bar':
-    print 'query is broken'
+    def test_basename(self):
+        self.assertEqual(self.url.basename,'file.ext')
 
-if x.get_query() != 'query=parameter&foo=bar':
-    print 'get_query() is broken'
+    def test_hostname(self):
+        self.assertEqual(self.url.hostname, 'www.example.co.uk')
 
-if x.get_query('foo') != 'bar':
-    print 'qet_query(value) is broken'
+    def test_filename(self):
+        self.assertEqual(self.url.filename,'file')
 
-if x.fragment != 'link':
-    print 'fragment is broken'
+    def test_extension(self):
+        self.assertEqual(self.url.extension,'ext')
 
-if x.url != 'http://username:password@www.example.co.uk:80/path/to/file.ext?query=parameter&foo=bar#link':
-    print x.url + ' url is broken'
+    def test_query(self):
+        self.assertEqual(self.url.query, 'query=parameter&foo=bar')
 
-x.update_query('biz', 'bazz')
-if x.get_query('biz') != 'bazz':
-    print 'update_query is broken'
+    def test_fragment(self):
+        self.assertEqual(self.url.fragment, 'link')
 
-x.update_query('biz', 'booz')
-if x.get_query('biz') != 'booz':
-    print 'update_query overwrite is broken'
+    def test_url(self):
+        self.assertEqual(self.url.url, 'http://username:password@www.example.co.uk:80/path/to/file.ext?query=parameter&foo=bar#link')
 
-if x.is_subdomain_of('example.co.uk') != True:
-    print 'is_subdomain_of is broken'
+class TestUrlMethods(unittest.TestCase):
 
-# Test is_subdomain_of method with a sub-subdomain
-x2 = URL('http://dev.front1.example.co.uk')
-if x2.is_subdomain_of('front1.example.co.uk') != True:
-    print 'subsubdomain is_subdomain_of is broken'
+    def setUp(self):
+        self.url = URL('sub.example.co.uk/path/to/file.ext?query=parameter&foo=bar')
 
-# Test parent domain method
-x3 = URL('front1.example.co.uk')
-if x3.is_parent_domain_of('http://dev.front1.example.co.uk') != True:
-    print 'is_parent_domain_of is broken'
+    def test_set_path(self):
+        self.url.path = 'path/to/file.ext'
+        self.assertEqual(self.url.path, '/path/to/file.ext')
 
-# Test useDefaults
-x3 = URL('front1.example.co.uk', useDefaults=True)
-if x3.url != 'http://front1.example.co.uk:80/':
-    print x3.url + ' useDefaults is broken'
+    def test_set_basename(self):
+        self.url.basename = 'newfile.ext'
+        self.assertEqual(self.url.path, '/path/to/newfile.ext')
 
-# Test parent domain method with same domain
-x4 = URL('example.co.uk')
-if x4.is_parent_domain_of('http://example.co.uk') != False:
-    print 'is_parent_domain_of is broken'
+    def test_get_query(self):
+        self.assertEqual(self.url.get_query(), 'query=parameter&foo=bar')
 
-x5 = URL('/path/to/index.html')
-if x5.hostname != None:
-    print x5.hostname + ' hostname for relative path is broken'
+    def test_get_single_query(self):
+        self.assertEqual(self.url.get_query('foo'), 'bar')
 
-x5.move_up_level()
-if x5.url != '/path/':
-    print x5.url + ' move_up_level is broken'
+    def test_update_query(self):
+        self.url.update_query('biz', 'bazz')
+        self.assertEqual(self.url.get_query('biz'), 'bazz')
 
-x5.move_up_level()
-if x5.url != '/':
-    print x5.url + ' move_up_level is broken'
+    def test_overwrite_query(self):
+        self.url.update_query('biz', 'booz')
+        self.assertEqual(self.url.get_query('biz'), 'booz')
 
-x5.move_up_level()
-if x5.url != '/':
-    print x5.url + ' move_up_level is broken'
+    def test_return_updated_query(self):
+        self.url.update_query('biz', 'booz')
+        self.assertEqual(self.url.query, 'query=parameter&foo=bar&biz=booz')        
+
+    def test_is_subdomain_of(self):
+        self.assertEqual(self.url.is_subdomain_of('example.co.uk'), True)
+
+    def test_is_sub_subdomain_of(self):
+        self.url = URL('http://dev.front1.example.co.uk')
+        self.assertEqual(self.url.is_subdomain_of('front1.example.co.uk'), True)
+
+    def test_is_parent_domain_of(self):
+        self.assertEqual(self.url.is_parent_domain_of('dev1.sub.example.co.uk'), True)
+
+    def test_move_up_level(self):
+        self.url.move_up_level()
+        self.assertEqual(self.url.path, '/path/')
+
+    def test_move_up_to_top_level(self):
+        self.url.move_up_level()
+        self.url.move_up_level()
+        self.url.move_up_level()
+        self.assertEqual(self.url.path, '/')
+
+class TestDefaults(unittest.TestCase):
+
+    def setUp(self):
+        self.url = URL('front1.example.co.uk', useDefaults=True)
+
+    def test_defaults(self):
+        self.assertEqual(self.url.url, 'http://front1.example.co.uk:80/')
+
+if __name__ == '__main__':
+    unittest.main()
