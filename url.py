@@ -368,7 +368,7 @@ class URL(object):
             pos = value.rfind('.')
             tld = value[pos+1:]
             value = value[:pos]
-        tldSlds = self._slds[tld]
+        tldSlds = self._slds.get(tld)
         if tldSlds is not None:
             tldSlds = tldSlds.split('|')
             pos = value.rfind('.')
