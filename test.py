@@ -111,6 +111,12 @@ class TestUrlMethods(unittest.TestCase):
         self.url.move_up_level()
         self.assertEqual(self.url.path, '/')
 
+    def test_validate(self):
+        self.assertEqual(self.url.validate(self.url.url), True)
+
+    def test_validate_fails(self):
+        self.assertEqual(self.url.validate('h://test'), False)
+
 class TestSettings(unittest.TestCase):
 
     def test_defaults(self):

@@ -363,6 +363,17 @@ class URL(object):
 
         return parts
 
+    def validate (self, value):
+        # regex pattern care of http://mathiasbynens.be/demo/url-regex @imme_emosol
+        # for compatibility, append 'http://' to beginning of urls if missing
+        pos = value.find('://')
+        if pos == -1:
+            value = 'http://' + value
+        match = re.match('(https?|ftp)://(-\.)?([^\s/?\.#-]+\.?)+(/[^\s]*)?$', value, re.I)
+        if match is None:
+            return False
+        return True
+
     def _get_xlds (self, value, tld=None, sld=None):
         if tld is None:
             pos = value.rfind('.')
