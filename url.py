@@ -364,12 +364,12 @@ class URL(object):
         return parts
 
     def validate (self, value):
-        # regex pattern care of http://mathiasbynens.be/demo/url-regex @imme_emosol
+        # regex pattern care of http://mathiasbynens.be/demo/url-regex @diegoperini
         # for compatibility, append 'http://' to beginning of urls if missing
         pos = value.find('://')
         if pos == -1:
             value = 'http://' + value
-        match = re.match('(https?|ftp)://(-\.)?([^\s/?\.#-]+\.?)+(/[^\s]*)?$', value, re.I)
+        match = re.match(u'^(?:(?:https?|ftp)://)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:/[^\s]*)?$', unicode(value), re.I | re.U | re.S)
         if match is None:
             return False
         return True
