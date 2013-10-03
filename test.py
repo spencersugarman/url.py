@@ -60,6 +60,10 @@ class TestUrlComponents(unittest.TestCase):
     def test_url(self):
         self.assertEqual(self.url.url, 'http://username:password@www.example.co.uk:80/path/to/file.ext?query=parameter&foo=bar#link')
 
+    def test_relative_path(self):
+        self.url.path = '../././.././'
+        self.assertEqual(self.url.path, '/')
+
 class TestUrlMethods(unittest.TestCase):
 
     def setUp(self):

@@ -129,9 +129,18 @@ class URL(object):
             return self.dirname
     @path.setter
     def path(self, value):
+        if value is not None:
+            value = value.replace('/./', '/')
         parts = self._parse_path(value)
         self.dirname = parts['dirname']
         self.basename = parts['basename']
+        moves = re.findall('/../', self.dirname)
+        moves = self.dirname.count('/../')
+        if moves > 0:
+            # /path/../././.././to/dir/
+            # /path/./././to/dir/
+            self.dirname = self.dirname.replace('/../', '/')
+            self.move_up_level(moves)
 
     @property
     def basename(self):
