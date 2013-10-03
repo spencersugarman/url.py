@@ -26,7 +26,7 @@ class URL(object):
         if self.protocol:
             url = self.protocol + '://'
         if self.username:
-            url += self.username + ':' = self.password + '@'
+            url += self.username + ':' + self.password + '@'
         if self.hostname:
             url += self.hostname
         if self.port:
