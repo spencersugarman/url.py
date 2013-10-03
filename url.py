@@ -328,39 +328,39 @@ class URL(object):
             # no scheme given
             value = value[2:]
         else:
-            pos = value.find('://')
-            if pos > -1:
-                parts['protocol'] = value[:pos].lower()
-                value = value[pos+3:]
+            splits = value.split('://', 1)
+            value = splits.pop()
+            if len(splits) > 0:
+                parts['protocol'] = splits[0]
             elif self.useDefaults:
                 parts['protocol'] = self.defaults['protocol']
             else:
                 parts['protocol'] = None
 
         # username:password@www.example.com:80/path/to/file
-        pos = value.find('@')
-        if pos > -1 and pos < value.find('/'):
-            userinfo = value[:pos].split(':')
+        splits = value.split('@', 1)
+        value = splits.pop()
+        if len(splits) > 0 and splits[0].find('/') == -1:
+            userinfo = splits.pop().split(':')
             parts['username'], parts['password'] = userinfo[0], userinfo[1]
-            value = value[pos+1:]
         else:
             parts['username'], parts['password'] = None, None
 
         # www.example.com:80/path/to/file
-        pos = value.find('/')
-        if pos > -1:
-            parts['path'] = value[pos:]
-            value = value[:pos]
+        splits = value.split('/', 1)
+        value = splits[0]
+        if len(splits) > 1:
+            parts['path'] = splits[1]
         elif self.useDefaults:
             parts['path'] = '/'
         else: 
             parts['path'] = None
 
         # www.example.com:80
-        pos = value.find(':')
-        if pos > -1:
-            parts['port'] = value[pos+1:]
-            value = value[:pos]
+        splits = value.split(':', 1)
+        value = splits[0]
+        if len(splits) > 1:
+            parts['port'] = splits[1]
         else:
             parts['port'] = None
 
